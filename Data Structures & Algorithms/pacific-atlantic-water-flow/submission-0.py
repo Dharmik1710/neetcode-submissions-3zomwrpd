@@ -1,0 +1,38 @@
+class Solution:
+    def pacificAtlantic(self, heights: List[List[int]]) -> List[List[int]]:
+        
+        def dfs(r: int, c: int, ocean: Set[[int, int]]) -> None:
+            if r < 0 or r == rows or c < 0 or c == cols or (r, c) in visited:
+                return
+            
+            visited.add((r, c))
+            ocean.add((r,c))
+            if r-1 >= 0 and heights[r][c] <= heights[r-1][c]:
+                dfs(r-1, c, ocean)
+            if r+1 < rows and heights[r][c] <= heights[r+1][c]:
+                dfs(r+1, c, ocean)
+            if c-1 >= 0 and heights[r][c] <= heights[r][c-1]:
+                dfs(r, c-1, ocean)
+            if c+1 < cols and heights[r][c] <= heights[r][c+1]:
+                dfs(r, c+1, ocean)
+                            
+        rows, cols = len(heights), len(heights[0])
+        pacific = set()
+        atlantic = set()
+        visited = set()
+
+        q = deque()
+        for r in range(rows):
+            pacific.add((r, 0))
+            atlantic.add((r, cols-1))
+        for c in range(cols):
+            pacific.add((0, c))
+            atlantic.add((rows-1, c))
+        
+        for r, c in pacific.copy():
+            dfs(r, c, pacific)
+        visited.clear()
+        for r, c in atlantic.copy():
+            dfs(r, c, atlantic)
+            
+        return list(pacific & atlantic)
